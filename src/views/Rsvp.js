@@ -1,153 +1,97 @@
-import React, {useState} from "react";
-import { useForm } from "react-hook-form";
-import { UncontrolledAlert } from "reactstrap";
-import {loadStdlib} from '@reach-sh/stdlib';
-// import * as backend from './build/index.main.mjs';
-import * as backend from '../reach/build/index.main.mjs';
-import { account } from "./utils"
+/*!
+
+=========================================================
+* BLK Design System React - v1.2.1
+=========================================================
+
+* Product Page: https://www.creative-tim.com/product/blk-design-system-react
+* Copyright 2022 Creative Tim (https://www.creative-tim.com)
+* Licensed under MIT (https://github.com/creativetimofficial/blk-design-system-react/blob/main/LICENSE.md)
+
+* Coded by Creative Tim
+
+=========================================================
+
+* The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+
+*/
+import React from "react";
+import classnames from "classnames";
+// javascript plugin used to create scrollbars on windows
+import PerfectScrollbar from "perfect-scrollbar";
+import MakeRsvp from "./MakeRsvp";
 // reactstrap components
 import {
   Button,
+  Card,
+  CardHeader,
+  CardBody,
+  ListGroup,
+  ListGroupItem,
+  Label,
   FormGroup,
-  Row,
-  Col,
-  Modal,
   Form,
   Input,
-  Card,
-  CardBody,
+  FormText,
+  NavItem,
+  NavLink,
+  Nav,
+  Table,
+  TabContent,
+  TabPane,
+  Container,
+  CardFooter,
+  Row,
+  Col,
+  UncontrolledTooltip,
+  UncontrolledCarousel
 } from "reactstrap";
 
-const stdlib = loadStdlib('ALGO');
+// core components
+import Navbar from "components/Navbar/Navbar.js";
 
 
-export default function Rsvp(props) {
-  const { handleSubmit } = useForm();
+// let ps = null;
 
-    const [info, setInfo] = useState("");
-    const [fees, setFees] = useState(null);
-    const [action, setAction] = useState("RSVP");
-
-    const [miniModal1, setMiniModal1] = React.useState(false);
-    const [miniModal2, setMiniModal2] = React.useState(false);
-    const [formModal, setFormModal] = useState(false);
-
-
-const handleClick = event => {
-    // event.currentTarget.classList.add('');
-    setFormModal(true);
-
-};
-
-    const Rsvp = () => {
-    //   let eventsArray = [];
-    //   eventsArray.push(info, fees);
-    //   console.log(eventsArray[0]);
-
-      setFormModal(false);
-
-      setInfo("");
-
-      attach(info)
-
-      // return eventsArray;
-    }
-
-    async function attach(info) {
-      const acc = await account();
-      const ctc = acc.contract(backend, JSON.parse(info));
-      const interact = {
-        checkIn: () => {
-            setMiniModal1(false);
-            setMiniModal2(true);
-            },
-        rsvpForEvent: (fees) => {
-            setFees(stdlib.formatCurrency(fees));
-            console.log(stdlib.formatCurrency(fees));
-            },
-        };
-        backend.Attendee(ctc, interact);
-        console.log(`You RSVPed to ${info}`);
-        setAction("Check-In");
-        setMiniModal1(true);
-    }
-
-  return (  
+export default function ProfilePage() {
+//   const [tabs, setTabs] = React.useState(1);
+//   React.useEffect(() => {
+//     if (navigator.platform.indexOf("Win") > -1) {
+//       document.documentElement.className += " perfect-scrollbar-on";
+//       document.documentElement.classList.remove("perfect-scrollbar-off");
+//       let tables = document.querySelectorAll(".table-responsive");
+//       for (let i = 0; i < tables.length; i++) {
+//         ps = new PerfectScrollbar(tables[i]);
+//       }
+//     }
+//     document.body.classList.toggle("profile-page");
+//     // Specify how to clean up after this effect:
+//     return function cleanup() {
+//       if (navigator.platform.indexOf("Win") > -1) {
+//         ps.destroy();
+//         document.documentElement.className += " perfect-scrollbar-off";
+//         document.documentElement.classList.remove("perfect-scrollbar-on");
+//       }
+//       document.body.classList.toggle("profile-page");
+//     };
+//   }, []);
+  return (
     <>
-        <Button className="btn-wrapper btn-simple" color="primary" onClick={handleClick}>
-            {action}
-        </Button>
-          <Modal
-            modalClassName="modal-black"
-            isOpen={formModal}
-            toggle={() => setFormModal(false)}
-          >
-            <div className="modal-header justify-content-center">
-              <button className="close" onClick={() => setFormModal(false)}>
-                <i className="tim-icons icon-simple-remove text-white" />
-              </button>
-              <div className="text-muted text-center ml-auto mr-auto">
-                <h3 className="mb-0">Reserve a Seat</h3>
-              </div>
-            </div>
-            <div className="modal-body">             
-            <Row>
-              <Col md="">
-                <Card className="card-plain">
-                  <CardBody>
-                    <Form role="form" onSubmit={handleSubmit(Rsvp)}>
-                      <Row>
-                        <Col md="12">
-                          <FormGroup>
-                            <label>Paste the contract Info</label>
-                            <Input placeholder="{ }" type="textarea"
-                            spellCheck="false"
-                            required
-                            // value={description} 
-                            onChange={(e) => setInfo(e.target.value)}
-                             />
-                          </FormGroup>
-                        </Col>
-                      </Row>
-                      <Button
-                        className="my-4" color="primary" type="submit"
-                      >
-                        RSVP
-                      </Button>
-                    </Form>
-                  </CardBody>
-                </Card>
+      <Navbar />   
+        <div className="page-header">         
+          <div className="content-center">
+            <Row className="row-grid justify-content-center align-items-center">
+              <Col  md="" >
+                <h1 className="text-white text-center">
+                  Make your Reservations               
+                </h1>
+                <div className="btn-wrapper pt-3">
+                  <MakeRsvp/>
+                </div>
               </Col>
             </Row>
-            </div>
-        </Modal>
-        <Modal
-            modalClassName="modal-info modal-primary modal-form"
-            isOpen={miniModal1}
-            toggle={() => setMiniModal1(false)}
-          >
-             <UncontrolledAlert className="alert-with-icon" color="info">
-              <span data-notify="icon" className="tim-icons icon-trophy" />
-              <span>
-                <b>Congrats! -</b>
-                You have successfully registered for the event. Remember to check in on the event date.
-              </span>
-            </UncontrolledAlert>
-          </Modal>
-          <Modal
-            modalClassName="modal-info modal-primary modal-form"
-            isOpen={miniModal2}
-            toggle={() => setMiniModal2(false)}
-          >
-             <UncontrolledAlert className="alert-with-icon" color="info">
-              <span data-notify="icon" className="tim-icons icon-trophy" />
-              <span>
-                <b>Congrats! -</b>
-                You have successfully checked into your event. Enjoy!.
-                You will receive your payment back
-              </span>
-            </UncontrolledAlert>
-          </Modal>
+          </div>
+        </div>
     </>
-    );
+  );
 }
