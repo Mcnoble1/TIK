@@ -19,10 +19,8 @@ import React from "react";
 
 // core components
 import TopNavbar from "components/Navbar/Navbar.js";
-import Footer from "components/Footer/Footer.js";
 import Benefit from "./Benefit";
 import Header from "./Header";
-import Events from "./Events";
 
 export default function LandingPage() {
   React.useEffect(() => {
@@ -38,8 +36,6 @@ export default function LandingPage() {
       <div className="wrapper">
         <Header />
         <Benefit />
-        <Events />
-        <Footer />
       </div>
     </div>
   );
