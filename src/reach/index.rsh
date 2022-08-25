@@ -1,3 +1,5 @@
+/* eslint-disable eqeqeq */
+/* eslint-disable no-use-before-define */
 // /* eslint-disable no-const-assign */
 // /* eslint-disable eqeqeq */
 // /* eslint-disable no-use-before-define */
@@ -86,19 +88,24 @@ const Details = Object({
 })
 
 export const main = Reach.App(() => {
+  setOptions({ untrustworthyMaps: true });
+
   const Admin = Participant('Admin', {
     // Specify Alice's interact interface here
     createEvent: Details,
     seeRSVP: Fun([Address], Null),
     confirmGuest: Fun([Address], Null),
     manageFunds: Fun([], Null),
+    ready: Fun([], Null),
   });
-  const Attendee = Participant('Attendee', {
+
+  const Attendee = API('Attendee', {
     // Specify Bob's interact interface here
     // eventDetails: Fun([contract], Null),  
     rsvpForEvent: Fun([Bytes(64), Bytes(64), UInt, UInt, Bytes(64), Bytes(64), Bytes(64)], Null),  
     checkIn: Fun([], Null)
   });
+
   const Info = View('Info', {
     details: Details,
     // howMany: UInt,
@@ -111,43 +118,59 @@ export const main = Reach.App(() => {
   init();
 
   Admin.only(() => {
-    // const { title, fee, date, location, description, tickets, organizer } = declassify(interact.createEvent());
     const details = declassify(interact.createEvent);
   })
   // The first one to publish deploys the contract
-  // Admin.publish(title, fee, date, location, description, tickets, organizer)
   Admin.publish(details);
   const {title, location, fee, tickets, organizer, date, description} = details;
   // enforce( thisConsensusTime() < deadline, "too late" );
   Info.details.set(details);
+  const Guests = new Map(Bool);
 
-  // const Guests = new Map(Bool);
   // Info.reserved.set((who) => isSome(Guests[who]));
-  commit();
+  // commit();
+  Admin.interact.ready();
 
-
-  // The second one to publish always attaches
-  Attendee.only(() => {
-    interact.rsvpForEvent(title, location, fee, tickets, organizer, date, description);
+  const [numTickets] = parallelReduce([tickets])
+  .invariant(balance() >= 0)
+  .while(numTickets > 0)
+  .api_(Attendee.rsvpForEvent, (titl, locate, fees, tick, organize, time, descrip) => {
+    check(fees == fee, "Fee can't be zero");
+    // check(! done, "event started");
+    // check(isNone(Guests[this]), "already registered");
+    return [fees, (notify) => {
+      Guests[this] = true;
+      notify(null);
+      const who = this; 
+      Admin.interact.seeRSVP(who); 
+      // Admin.interact.confirmGuest(who);
+      return [ numTickets - 1];
+    }];
   })
-  Attendee.publish()
-    .pay(fee);
-  commit()
 
-  Admin.interact.seeRSVP(Attendee);
 
-  Attendee.only(() => {
-    const checkIn = declassify(interact.checkIn());
-  })
-  Attendee.publish(checkIn);
-  commit();
 
-  Admin.only(() => {
-    const manageFunds = declassify(interact.manageFunds());
-    const confirmGuest = declassify(interact.confirmGuest(Attendee));
-  })
-  Admin.publish(manageFunds, confirmGuest);
-  transfer(balance()).to(Attendee);
+  // Attendee.only(() => {
+  //   interact.rsvpForEvent(title, location, fee, tickets, organizer, date, description);
+  // })
+  // Attendee.publish()
+  //   .pay(fee);
+  // commit()
+
+  // Admin.interact.seeRSVP(Attendee);
+
+  // Attendee.only(() => {
+  //   const checkIn = declassify(interact.checkIn());
+  // })
+  // Attendee.publish(checkIn);
+  // commit();
+
+  // Admin.only(() => {
+  //   const manageFunds = declassify(interact.manageFunds());
+  //   const confirmGuest = declassify(interact.confirmGuest(Attendee));
+  // })
+  // Admin.publish(manageFunds, confirmGuest);
+  transfer(balance()).to(Admin);
 
 
   commit();
