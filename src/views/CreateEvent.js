@@ -30,8 +30,11 @@ const stdlib = loadStdlib('ALGO');
 
 
 export default function CreateEvent(props) {
-  const { handleSubmit } = useForm();
+    const { handleSubmit } = useForm();
 
+    // const mainContainer = document.getElementById('rsvp');
+
+    const RSVPs = [];
     const [title, setTitle] = useState("");
     const [fee, setFee] = useState(1);
     // const [image, setImage] = useState("");
@@ -82,16 +85,26 @@ export default function CreateEvent(props) {
           // startRSVP();
         },
         seeRSVP: (who) => {
-          setAddress(who);
+          setAddress(stdlib.formatAddress(who));
+          RSVPs.push(who);
+          // const rsvpEl = React.createElement('div')
+          // rsvpEl.className = 'card my-4 col-5'
+          // rsvpEl.innerHTML = `<p> 
+          //   ${address} made a reservation and checked in to the event.
+          // </p>`
+
+          // mainContainer.appendChild(rsvpEl);
           console.log(`${stdlib.formatAddress(who)} made a reservation for the event.`);
         },
-        confirmGuest: (who) => {
-          console.log(`${stdlib.formatAddress(who)} has checked in.`);
-        },
-        manageFunds: () => {
-          console.log(`The funds are managed`);
-        },
+        // confirmGuest: (who) => {
+        //   console.log(`${stdlib.formatAddress(who)} has checked in.`);
+        // },
+        // manageFunds: () => {
+        //   console.log(`The funds are managed`);
+        // },
 			};
+
+
       backend.Admin(ctc, interact);
       const ctcInfoStr = JSON.stringify(await ctc.getInfo(), null, 2);
       console.log(`Your contract is deployed as = ${ctcInfoStr}`);
@@ -271,9 +284,9 @@ export default function CreateEvent(props) {
                   onClick={(e) => copyToClipboard(e.currentTarget)}
                 >Copy to clipboard
                 </button>
-                <p>{address} made a reservation for the event.</p>
+                {/* <p>{address} made a reservation for the event.</p>
                 <p>The funds are managed</p>
-                <p>{address} has checked in</p>
+                <p>{address} has checked in</p> */}
             </Container>
           </Modal>
     </>
