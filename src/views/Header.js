@@ -7,7 +7,6 @@ import MakeRsvp from "./MakeRsvp";
 
 // reactstrap components
 import {
-  Button,
   Row,
   Col,
 } from "reactstrap";

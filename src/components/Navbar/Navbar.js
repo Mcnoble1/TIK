@@ -149,6 +149,7 @@ export default function TopNavbar(props) {
                 onClick={connectWithMyAlgoWallet}
               >
                 <i className="tim-icons icon-spaceship" /> {accountAddress}
+                 {accountBal}
               </Button>
           
               </Col>
