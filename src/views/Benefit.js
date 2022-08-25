@@ -16,7 +16,7 @@ export default function Benefit() {
           <Container>
             <Row className="justify-content-center">
               <Col lg="12">
-                <h1 className="text-center">Your best benefit</h1>
+                <h1 className="text-center">How it Works</h1>
                 <Row className="row-grid justify-content-center">
                   <Col lg="3">
                     <div className="info">

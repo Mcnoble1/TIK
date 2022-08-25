@@ -1,6 +1,7 @@
 import React from "react";
 // react plugin used to create datetimepicker
 import CreateEvent from "./CreateEvent";
+import MakeRsvp from "./MakeRsvp";
 
 
 
@@ -57,14 +58,7 @@ export default function Header() {
                 </p>
                 <div className="btn-wrapper pt-3">
                   <CreateEvent />
-                  <Button
-                    className="btn-simple"
-                    color="info"
-                    href='#rsvp'
-                    onClick={(e) => e.preventDefault()}
-                  >
-                    <i className="tim-icons icon-bulb-63" /> RSVP for an Event
-                  </Button>
+                  <MakeRsvp />
                 </div>
               </Col>
               <Col lg="4" md="5">

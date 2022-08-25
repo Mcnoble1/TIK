@@ -24,6 +24,8 @@ import "assets/scss/blk-design-system-react.scss";
 import "assets/demo/demo.css";
 
 import Index from "views/Index.js";
+import Dashboard from "views/Dashboard.js";
+import Rsvp from "views/Rsvp.js";
 // import LandingPage from "views/LandingPage.js";
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
@@ -36,14 +38,14 @@ root.render(
         path="/landing-page"
         render={(props) => <LandingPage {...props} />}
       /> */}
-      {/* <Route
-        path="/register-page"
-        render={(props) => <RegisterPage {...props} />}
-      /> */}
-      {/* <Route
-        path="/profile-page"
-        render={(props) => <ProfilePage {...props} />}
-      /> */}
+      <Route
+        path="/rsvp"
+        render={(props) => <Rsvp {...props} />}
+      />
+      <Route
+        path="/dashboard"
+        render={(props) => <Dashboard {...props} />}
+      />
       <Redirect from="/" to="/home" />
     </Switch>
   </BrowserRouter>
