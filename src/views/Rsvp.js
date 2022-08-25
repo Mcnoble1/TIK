@@ -16,35 +16,13 @@
 
 */
 import React from "react";
-import classnames from "classnames";
 // javascript plugin used to create scrollbars on windows
-import PerfectScrollbar from "perfect-scrollbar";
+// import PerfectScrollbar from "perfect-scrollbar";
 import MakeRsvp from "./MakeRsvp";
 // reactstrap components
 import {
-  Button,
-  Card,
-  CardHeader,
-  CardBody,
-  ListGroup,
-  ListGroupItem,
-  Label,
-  FormGroup,
-  Form,
-  Input,
-  FormText,
-  NavItem,
-  NavLink,
-  Nav,
-  Table,
-  TabContent,
-  TabPane,
-  Container,
-  CardFooter,
   Row,
   Col,
-  UncontrolledTooltip,
-  UncontrolledCarousel
 } from "reactstrap";
 
 // core components
