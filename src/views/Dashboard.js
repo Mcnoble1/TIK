@@ -11,7 +11,7 @@ import {
 // core components
 import Navbar from "components/Navbar/Navbar.js";
 
-let ps = null;
+// let ps = null;
 
 export default function ProfilePage() {
   // const [tabs, setTabs] = React.useState(1);
