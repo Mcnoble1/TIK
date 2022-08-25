@@ -37,7 +37,7 @@ const eventDetails = async () => {
       'Who is the event organizer?',
       (x => x)
     );
-    details = { title, date, fee, location, description, tickets, organizer };  
+    details = { title, location, fee, tickets, organizer, date, description };  
     return details;  
   }
 
@@ -95,7 +95,7 @@ console.log(`Creating the Event`);
 
 const startRSVP = async () => {
   const runRSVP = async(who) => {
-    const { title, date, fee, location, description, tickets, organizer } = details;
+    const {title, location, fee, tickets, organizer, date, description } = details;
 
     const acc = await stdlib.newTestAccount(stdlib.parseCurrency(1000)); 
     acc.setDebugLabel(); // set the debug label 
@@ -142,7 +142,7 @@ await ctcAdmin.participants.Admin({
         // implement Admin's interact object here
   ...stdlib.hasRandom,
   createEvent: async () => {
-    console.log(`The event details is sent to the contract:`, await eventDetails());
+    console.log(`The event details is sent to the contract:`, eventDetails());
     return details;
   },
   
@@ -158,7 +158,6 @@ await ctcAdmin.participants.Admin({
   confirmGuest: (who) => {
     console.log(`${stdlib.formatAddress(who)} has checked in.`);
   },
-  
   
   manageFunds: () => {
     console.log(`The funds are managed`);

@@ -60,7 +60,8 @@ const handleClick = event => {
 
 
     async function attach(info) {
-      const acc = await account();
+      try {
+        const acc = await account();
       const ctc = acc.contract(backend, JSON.parse(info));
       const { fee } = await ctc.unsafeViews.Info.details();
       const { title } = await ctc.unsafeViews.Info.details();
@@ -78,31 +79,19 @@ const handleClick = event => {
       setTickets(stdlib.formatCurrency(stdlib.parseCurrency(tickets)));
       setOrganizer(organizer);
 
-
-      const interact = {
-        rsvpForEvent: async (title, location, fee, tickets, organizer, date, description) => {
-
-            },
-        checkIn: () => {
-          setMiniModal1(false);
-          setMiniModal2(true);
-          },
-      };
-        backend.Attendee(ctc, interact);
-        console.log(`You RSVPed to ${info}`);
-        console.log(`You paid ${(fee)} ${stdlib.standardUnit} for the event`);
-        console.log(`You have RSVPed for the event: ${title} 
-                     with the details: ${description}
-                    which costs: ${(fee)} ${stdlib.standardUnit}
-                    and is held at: ${location}
-                    on: ${date}
-                    available tickets: ${tickets}
-                    organized by: ${organizer}`);
+        await ctc.apis.Attendee.rsvpForEvent(title, location, fee, tickets, organizer, date, description);
+        // await ctc.apis.Attendee.checkIn()
+        // checkIn: () => {
+        //   setMiniModal1(false);
+        //   setMiniModal2(true);
+        //   },
+      // };
         setAction("Check-In");
         setFormModal(false);
         setMiniModal1(true);
-        // setMiniModal(true);
-
+      } catch (err) {
+        console.log("Failed to RSVP because tickets sold out");
+      }
     }
 
   return (  
@@ -152,36 +141,7 @@ const handleClick = event => {
             </Row>
             </div>
         </Modal>
-        {/* <Modal
-            modalClassName="modal-info modal-primary modal-form"
-            isOpen={miniModal1}
-            toggle={() => setMiniModal1(false)}
-          >
-             <UncontrolledAlert className="alert-with-icon" color="info">
-              <span data-notify="icon" className="tim-icons icon-trophy" />
-              <span>
-                <b>Congrats! -</b>
-                You have successfully registered for the {title} event. Remember to check in on the event date.
-              </span>
-              <p>You paid {fee}{stdlib.standardUnit} for the event</p>
-              <p>You have RSVPed for the event{title}
-                     with the details: {description}
-                    which costs: {fee}{stdlib.standardUnit}
-                    and is held at: {location}
-                    on: {date}
-                    available tickets: {tickets}
-                    organized by: {organizer}
-              </p>
-            </UncontrolledAlert>
-            <ListGroup>
-                <ListGroupItem>Fee: {fee} </ListGroupItem>
-                <ListGroupItem>Details: {description} </ListGroupItem>
-                <ListGroupItem>Venue: {location} </ListGroupItem>
-                <ListGroupItem>Date: {date} </ListGroupItem>
-                <ListGroupItem>No of Tickets: {tickets} </ListGroupItem>
-                <ListGroupItem>Organizer: {organizer} </ListGroupItem>
-              </ListGroup>
-          </Modal> */}
+        
            <Modal
             modalClassName="modal-black modal"
             isOpen={miniModal1}
