@@ -2,7 +2,7 @@ import React from "react";
 // react plugin used to create datetimepicker
 import CreateEvent from "./CreateEvent";
 import MakeRsvp from "./MakeRsvp";
-
+import HeroImage from "../assets/img/cercuri.png";
 
 
 // reactstrap components
@@ -50,11 +50,11 @@ export default function Header() {
               <Col lg="6" md="6">
                 <h1 className="text-white">
                   TIK <br />
-                  <span className="text-white">secured</span>
+                  <span className="text-white"></span>
                 </h1>
-                <p className="text-white mb-3">
+                <h3 className="text-white mb-3">
                   Decentralized Reservation Platform for Events
-                </p>
+                </h3>
                 <div className="btn-wrapper pt-3">
                   <CreateEvent />
                   <MakeRsvp />
@@ -64,7 +64,7 @@ export default function Header() {
                 <img
                   alt="..."
                   className="img-fluid"
-                  src={require("assets/img/etherum.png")}
+                  src={HeroImage}
                 />
               </Col>
             </Row>
