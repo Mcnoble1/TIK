@@ -8,26 +8,17 @@ let done = false;
 const RSVPs = [];
 let details = null;
 
-const eventDetails = async () => {
     const title = await ask.ask(
       'Enter the event name:',
       (x => x)
-    );
-    const date = await ask.ask(
-      'Enter the event date:',
-      (x => x)
-    );
-    const fee = await ask.ask(
-      'How much would you like to charge for the event?',
-      stdlib.parseCurrency,
     );
     const location = await ask.ask(
       'Where is the event?',
       (x => x)
     );
-    const description = await ask.ask(
-      'What is the event about?',
-      (x => x)
+    const fee = await ask.ask(
+      'How much would you like to charge for the event?',
+      stdlib.parseCurrency,
     );
     const tickets = await ask.ask(
       'How many tickets would you like to sell?',
@@ -37,9 +28,17 @@ const eventDetails = async () => {
       'Who is the event organizer?',
       (x => x)
     );
-    details = { title, location, fee, tickets, organizer, date, description };  
-    return details;  
-  }
+    const date = await ask.ask(
+      'Enter the event date:',
+      (x => x)
+    );
+    const description = await ask.ask(
+      'What is the event about?',
+      (x => x)
+    );
+    
+details = { title, location, fee, tickets, organizer, date, description };  
+
 
 
 // const isAdmin = await ask.ask(
@@ -108,8 +107,7 @@ const startRSVP = async () => {
     const getBalance = async () => stdlib.formatCurrency(await stdlib.balanceOf(acc)); // get the balance
  
     try {
-    await ctc.apis.Attendee.rsvpForEvent(details.fee, details.title, details.location, details.date, details.organizer, details.description); 
-    // if ( raffleNumber == ticket ) { 
+    await ctc.apis.Attendee.rsvpForEvent(title, location, fee, tickets, organizer, date, description); 
       console.log(`${who} paid ${stdlib.formatCurrency(fee)} ${stdlib.standardUnit} for the event`);
       console.log(`${who} have RSVPed for the event: ${title} 
                    with the details: ${description}
@@ -118,19 +116,43 @@ const startRSVP = async () => {
                   on: ${date}
                   organized by: ${organizer}`);
     } catch (e) {
-      // console.log(e);
       console.log(`${who} failed to make a reservation because tickets sold out.`); 
     };
     console.log(`${who} balance after is ${await getBalance()}`); // log the balance
 
-  };
-  await runRSVP('Alice');
-  await runRSVP('Bob');
-  await runRSVP('Charlie');
-  while (!done) {
+      
+    const checkin = await ask.ask(
+      'Would you like to check in?',
+      ask.yesno
+      );
+      if (checkin) {
+        try {
+        await ctc.apis.Attendee.checkIn(); 
+        console.log(`You have successfully checked in, you will get your money back.`);  
+        } catch (e) {
+          console.log(`You have failed to check in and deadline has passed.`); 
+        };
+        console.log(`${who} balance after is ${await getBalance()}`); // log the balance
+     } else {
+        console.log(`You did not checked in.`); 
+        console.log(`${who} balance after is ${await getBalance()}`); // log the balance
+     }
+
+    }
+    // if (RSVPs.length === tickets) {
+    //   console.log(`All tickets have been reserved.`);
+    //   done = true;
+    // }
+    await runRSVP('Alice');
+    await runRSVP('Bob');
+    await runRSVP('Charlie');
+    await runRSVP('Dave');
+    while (!done) {
     await stdlib.wait(0);
-  }
+    }
 };
+
+
 
 
 const ctcAdmin = accAdmin.contract(backend);
@@ -141,10 +163,7 @@ const ctcAdmin = accAdmin.contract(backend);
 await ctcAdmin.participants.Admin({
         // implement Admin's interact object here
   ...stdlib.hasRandom,
-  createEvent: async () => {
-    console.log(`The event details is sent to the contract:`, eventDetails());
-    return details;
-  },
+  createEvent: details,
   
   ready: () => {
     console.log('The event is ready to start accepting reservations.');
@@ -181,9 +200,9 @@ await ctcAdmin.participants.Admin({
 
 
 
-for (const [name, acc] of RSVPs) {
-  console.log(`${name} with the address ${stdlib.formatAddress(acc)} made a reservation and checked in to the event.`);
-  }
+// for (const [name, acc] of RSVPs) {
+//   console.log(`${name} with the address ${stdlib.formatAddress(acc)} made a reservation and checked in to the event.`);
+//   }
 
 // const after = await getBalance();
 // console.log(`Your balance is now ${after}`);

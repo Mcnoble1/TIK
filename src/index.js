@@ -34,10 +34,6 @@ root.render(
   <BrowserRouter>
     <Switch>
       <Route path="/home" render={(props) => <Index {...props} />} />
-      {/* <Route
-        path="/landing-page"
-        render={(props) => <LandingPage {...props} />}
-      /> */}
       <Route
         path="/rsvp"
         render={(props) => <Rsvp {...props} />}

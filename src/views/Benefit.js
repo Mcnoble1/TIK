@@ -26,9 +26,9 @@ export default function Benefit() {
                       <h4 className="info-title">Create Events</h4>
                       <hr className="line-primary" />
                       <p>
-                        Divide details about your work into parts. Write a few
-                        lines about each one. A paragraph describing a feature
-                        will.
+                        Connect your wallet to create events and share 
+                        your event information with the public to RSVP 
+                        for your event.
                       </p>
                     </div>
                   </Col>
@@ -40,9 +40,8 @@ export default function Benefit() {
                       <h4 className="info-title">RSVP for Events</h4>
                       <hr className="line-warning" />
                       <p>
-                        Divide details about your product or agency work into
-                        parts. Write a few lines about each one. A paragraph
-                        describing feature will be a feature.
+                        RSVP for events you are interested in.
+                        Paste the event information to make your reservations.
                       </p>
                     </div>
                   </Col>
@@ -54,9 +53,7 @@ export default function Benefit() {
                       <h4 className="info-title">Check-in to Events</h4>
                       <hr className="line-success" />
                       <p>
-                        Divide details about your product or agency work into
-                        parts. Write a few lines about each one. A paragraph
-                        describing be enough.
+                        Check-in to events you are attending and get your rewards.
                       </p>
                     </div>
                   </Col>

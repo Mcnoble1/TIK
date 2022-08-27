@@ -34,9 +34,9 @@ export default function CreateEvent(props) {
 
     // const mainContainer = document.getElementById('rsvp');
 
-    const RSVPs = [];
+    const [RSVPs, setRSVPs] = useState([]);
     const [title, setTitle] = useState("");
-    const [fee, setFee] = useState(1);
+    const [fees, setFees] = useState(1);
     // const [image, setImage] = useState("");
     const [location, setLocation] = useState("");
     const [date, setDate] = useState("Sept 1, 2022");
@@ -47,11 +47,12 @@ export default function CreateEvent(props) {
     const [ctcInfoStr, setCtcInfoStr] = useState("")
 
     const [miniModal, setMiniModal] = React.useState(false);
+    const [miniModal1, setMiniModal1] = React.useState(false);
     const [formModal, setFormModal] = useState(false);
 
     const sleep = (milliseconds) => new Promise(resolve => setTimeout(resolve, milliseconds));
 
-
+    const fee = stdlib.parseCurrency(fees);
     let details;
 
     details = {title, location, fee, tickets, organizer, date, description};
@@ -61,6 +62,15 @@ export default function CreateEvent(props) {
       setFormModal(true);
   
       };
+
+    const reservations = event =>  {
+      for ( const rsvp of RSVPs) {
+      event.currentTarget.insertAdjacentHTML("afterend", `<p className="rsvp">${rsvp} made a reservation for the event.</p>`)  
+      // sleep(5000);
+      // event.currentTarget.adjacentHTML.remove() 
+      // = `<p className="rsvp">See Reservations</p>`
+      }
+    }
 
       async function copyToClipboard(button) {
         navigator.clipboard.writeText(ctcInfoStr);
@@ -73,46 +83,44 @@ export default function CreateEvent(props) {
       }
 
     async function deploy() {
-      const acc = await account();
-      const ctc = acc.contract(backend);
-      const interact = {
-				deadline: { ETH: 10, ALGO: 100, CFX: 1000 }[stdlib.connector],
-				// fee: stdlib.parseCurrency(fee),
-        createEvent: details,
-
-        ready: () => {
-          console.log('The event is ready to start accepting reservations.');
-          // startRSVP();
-        },
-        seeRSVP: (who) => {
-          setAddress(stdlib.formatAddress(who));
-          RSVPs.push(who);
-          // const rsvpEl = React.createElement('div')
-          // rsvpEl.className = 'card my-4 col-5'
-          // rsvpEl.innerHTML = `<p> 
-          //   ${address} made a reservation and checked in to the event.
-          // </p>`
-
-          // mainContainer.appendChild(rsvpEl);
-          console.log(`${stdlib.formatAddress(who)} made a reservation for the event.`);
-        },
-        // confirmGuest: (who) => {
-        //   console.log(`${stdlib.formatAddress(who)} has checked in.`);
-        // },
-        // manageFunds: () => {
-        //   console.log(`The funds are managed`);
-        // },
-			};
-
-
-      backend.Admin(ctc, interact);
-      const ctcInfoStr = JSON.stringify(await ctc.getInfo(), null, 2);
-      console.log(`Your contract is deployed as = ${ctcInfoStr}`);
-      setFormModal(false);
-
-      setMiniModal(true);
-      setCtcInfoStr(ctcInfoStr);
+      try{
+        const acc = await account();
+        const ctc = acc.contract(backend);
+        const interact = {
+          deadline: { ETH: 10, ALGO: 100, CFX: 1000 }[stdlib.connector],
+          // fee: stdlib.parseCurrency(fee),
+          createEvent: details,
+  
+          ready: () => {
+            console.log('The event is ready to start accepting reservations.');
+          },
+          seeRSVP: (who) => {
+            setAddress(stdlib.formatAddress(who));
+            setRSVPs(RSVPs => [...RSVPs, stdlib.formatAddress(who)]);           
+          },
+          confirmGuest: (who) => {
+            console.log(`${stdlib.formatAddress(who)} has checked in.`);
+          },
+          // manageFunds: () => {
+          //   console.log(`The funds are managed`);
+          // },
+        };
+        backend.Admin(ctc, interact);
+        const ctcInfoStr = JSON.stringify(await ctc.getInfo(), null, 2);
+        console.log(`Your contract is deployed as = ${ctcInfoStr}`);
+        setFormModal(false);
+  
+        setMiniModal(true);
+        setCtcInfoStr(ctcInfoStr);
+        // } catch (err) {
+        //   console.log(err);
+        //   setMiniModal1(true);
+        // }
+      } catch (err) {
+        setMiniModal1(true);
+      }
     }
+     
 
   return (  
     <>
@@ -125,9 +133,6 @@ export default function CreateEvent(props) {
             toggle={() => setFormModal(false)}
           >
             <div className="modal-header justify-content-center">
-              {/* <button className="close" onClick={() => setFormModal(false)}>
-                <i className="tim-icons icon-simple-remove text-white" />
-              </button> */}
               <div className="text-muted text-center ml-auto mr-auto">
                 <h3 className="mb-0">Fill in the Event Details</h3>
               </div>
@@ -164,7 +169,7 @@ export default function CreateEvent(props) {
                             <label>Fee (ALGO)</label>
                             <Input defaultValue="1" type="number" 
                             required
-                            onChange={(e) => setFee(e.target.value)} 
+                            onChange={(e) => setFees(e.target.value)} 
                             />
                           </FormGroup>
                         </Col>
@@ -172,6 +177,7 @@ export default function CreateEvent(props) {
                           <FormGroup>
                             <label>Tickets</label>
                             <Input placeholder="10" type="number" 
+                            required
                             onChange={(e) => setTickets(e.target.value)}
                             />
                           </FormGroup>
@@ -230,6 +236,19 @@ export default function CreateEvent(props) {
             </div>
         </Modal>
         <Modal
+            modalClassName="modal-black modal-primary modal-form"
+            isOpen={miniModal1}
+            toggle={() => setMiniModal1(false)}
+          >
+             <UncontrolledAlert className="alert-with-icon" color="">
+              <span data-notify="icon" className="tim-icons icon-" />
+              <h3>NGMI! 😢😢</h3>
+              <span>
+                Ensure you enable popup in your browser and have enough funds in your wallet.
+              </span>
+            </UncontrolledAlert>
+          </Modal>
+        <Modal
             modalClassName="modal-black modal"
             isOpen={miniModal}
             toggle={() => setMiniModal(false)}
@@ -238,7 +257,7 @@ export default function CreateEvent(props) {
              <UncontrolledAlert className="alert-with-icon" color="transparent">
               <span data-notify="icon" className="tim-icons icon-trophy" />
               <span>
-                <b>Congrats! -</b>
+                <b>WAGMI! 🔥🎉🎊🍾-</b>
                 Your event has been created successfully
               </span>
               </UncontrolledAlert>
@@ -262,7 +281,7 @@ export default function CreateEvent(props) {
                     </Row>
                     <Row>
                       <ListGroup>
-                        <ListGroupItem>Fee: {fee} {stdlib.standardUnit}</ListGroupItem>
+                        <ListGroupItem>Fee: {fees} {stdlib.standardUnit}</ListGroupItem>
                         <ListGroupItem>Details: {description}</ListGroupItem>
                         <ListGroupItem>Venue: {location}</ListGroupItem>
                         <ListGroupItem>Date: {date}</ListGroupItem>
@@ -283,6 +302,14 @@ export default function CreateEvent(props) {
                 <button className="btn-wrapper mt-3 mb-3 btn-simple btn-success"
                   onClick={(e) => copyToClipboard(e.currentTarget)}
                 >Copy to clipboard
+                </button>
+                <button className="btn-wrapper mt-3 mb-3 btn-simple btn-success"
+                 onClick={reservations}
+                >See Reservations
+                </button>
+                <button className="btn-wrapper mt-3 mb-3 btn-simple btn-success"
+                  // onClick={}
+                >See Checkins
                 </button>
                 {/* <p>{address} made a reservation for the event.</p>
                 <p>The funds are managed</p>
