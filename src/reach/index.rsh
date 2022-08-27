@@ -24,7 +24,6 @@ export const main = Reach.App(() => {
     seeRSVP: Fun([Address], Null),
     confirmGuest: Fun([Address], Null),
     manageFunds: Fun([], Null),
-    ready: Fun([], Null),
   });
 
   const Attendee = API('Attendee', {
@@ -35,13 +34,8 @@ export const main = Reach.App(() => {
 
   const Info = View('Info', {
     details: Details,
-    // howMany: UInt,
-    // reserved: Fun([Address], Bool),
   });
-  // const Notify = Events({
-  //   register: [Address],
-  //   checkin: [Address, Bool],
-  // });
+  
   init();
 
   Admin.only(() => {
@@ -56,7 +50,6 @@ export const main = Reach.App(() => {
 
   // Info.reserved.set((who) => isSome(Guests[who]));
   // commit();
-  Admin.interact.ready();
 
   const [ numTickets] = parallelReduce([ tickets])
   .invariant(balance() >= 0)
@@ -70,49 +63,27 @@ export const main = Reach.App(() => {
       notify(null);
       const who = this; 
       Admin.interact.seeRSVP(who); 
-      // Admin.interact.confirmGuest(who);
-      return [ numTickets - 1];
+      return [ numTickets ];
     }];
   })
   .api_(Attendee.checkIn, () => {
     // check(balance() == fee, "not an attendee");
     // check(isSome(Guests[guest]), "no reservation");
-    return [ fee, (notify) => {
+    return [ (notify) => {
       notify(null);
       const who = this; 
       Admin.interact.confirmGuest(who); 
-      if (balance() == fee) {
-        transfer(balance()).to(who);
-      } else {
-        transfer(balance() / numTickets).to(who);
-      }
-      return [ numTickets ];
+      transfer(balance()).to(who);
+      // if (balance() == fee) {
+      //   transfer(balance()).to(who);
+      // } else {
+      //   transfer(balance() / numTickets).to(who);
+      // }
+      return [ numTickets - 1 ];
     } ];
   });
-
-  // Attendee.only(() => {
-  //   interact.rsvpForEvent(title, location, fee, tickets, organizer, date, description);
-  // })
-  // Attendee.publish()
-  //   .pay(fee);
-  // commit()
-
-  // Admin.interact.seeRSVP(Attendee);
-
-  // Attendee.only(() => {
-  //   const checkIn = declassify(interact.checkIn());
-  // })
-  // Attendee.publish(checkIn);
-  // commit();
-
-  // Admin.only(() => {
-  //   const manageFunds = declassify(interact.manageFunds());
-  //   const confirmGuest = declassify(interact.confirmGuest(Attendee));
-  // })
-  // Admin.publish(manageFunds, confirmGuest);
   
   transfer(balance()).to(Admin);
-
 
   commit();
 
