@@ -28,71 +28,68 @@ const stdlib = loadStdlib('ALGO');
 export default function MakeRsvp(props) {
   const { handleSubmit } = useForm();
 
-    const [title, setTitle] = useState("");
-    const [fee, setFee] = useState();
-    const [location, setLocation] = useState("");
-    const [date, setDate] = useState("");
-    const [description, setDescription] = useState("");
-    const [tickets, setTickets] = useState();
-    const [organizer, setOrganizer] = useState("");
-    
-    const [action, setAction] = useState("RSVP for event");
-    const [info, setInfo] = useState("");
+  const [title, setTitle] = useState("");
+  const [fee, setFee] = useState();
+  const [location, setLocation] = useState("");
+  const [date, setDate] = useState("");
+  const [description, setDescription] = useState("");
+  const [tickets, setTickets] = useState();
+  const [organizer, setOrganizer] = useState("");
+  
+  const [action, setAction] = useState("RSVP for event");
+  const [info, setInfo] = useState("");
 
-    const [miniModal1, setMiniModal1] = React.useState(false);
-    const [miniModal2, setMiniModal2] = React.useState(false);
-    const [formModal, setFormModal] = useState(false);
+  const [miniModal1, setMiniModal1] = React.useState(false);
+  const [miniModal2, setMiniModal2] = React.useState(false);
+  const [miniModal3, setMiniModal3] = React.useState(false);
+  const [formModal, setFormModal] = useState(false);
 
 
-const handleClick = event => {
-    event.currentTarget.parentElement.parentNode.classList.add('d-none');
-    setFormModal(true);
-};
+  const handleClick = event => {
+      event.currentTarget.parentElement.parentNode.classList.add('d-none');
+      setFormModal(true);
+  };
 
-    const Rsvp = () => {
-    
+  const checkin = event => {
+    event.currentTarget.classList.add('d-none');
+    setMiniModal2(true);
+    };
 
-      setInfo("");
+  const Rsvp = () => {
+    setInfo("");
+    attach(info)
+  }
 
-      attach(info)
+  async function attach(info) {
+    try {
+      const acc = await account();
+    const ctc = acc.contract(backend, JSON.parse(info));
+    const { fee } = await ctc.unsafeViews.Info.details();
+    const { title } = await ctc.unsafeViews.Info.details();
+    const { location } = await ctc.unsafeViews.Info.details();
+    const { date } = await ctc.unsafeViews.Info.details();
+    const { description } = await ctc.unsafeViews.Info.details();
+    const { tickets } = await ctc.unsafeViews.Info.details();
+    const { organizer } = await ctc.unsafeViews.Info.details();
 
+    setFee(stdlib.formatCurrency(fee));
+    setTitle(title);
+    setLocation(location);
+    setDate(date);
+    setDescription(description);
+    setTickets(stdlib.formatCurrency(stdlib.parseCurrency(tickets)));
+    setOrganizer(organizer);
+
+      await ctc.apis.Attendee.rsvpForEvent(title, location, fee, tickets, organizer, date, description);
+      await ctc.apis.Attendee.checkIn()
+
+      setAction("Check-In");
+      setFormModal(false);
+      setMiniModal1(true);
+    } catch (err) {
+      setMiniModal3(true);
     }
-
-
-    async function attach(info) {
-      try {
-        const acc = await account();
-      const ctc = acc.contract(backend, JSON.parse(info));
-      const { fee } = await ctc.unsafeViews.Info.details();
-      const { title } = await ctc.unsafeViews.Info.details();
-      const { location } = await ctc.unsafeViews.Info.details();
-      const { date } = await ctc.unsafeViews.Info.details();
-      const { description } = await ctc.unsafeViews.Info.details();
-      const { tickets } = await ctc.unsafeViews.Info.details();
-      const { organizer } = await ctc.unsafeViews.Info.details();
-
-      setFee(stdlib.formatCurrency(stdlib.parseCurrency(fee)));
-      setTitle(title);
-      setLocation(location);
-      setDate(date);
-      setDescription(description);
-      setTickets(stdlib.formatCurrency(stdlib.parseCurrency(tickets)));
-      setOrganizer(organizer);
-
-        await ctc.apis.Attendee.rsvpForEvent(title, location, fee, tickets, organizer, date, description);
-        // await ctc.apis.Attendee.checkIn()
-        // checkIn: () => {
-        //   setMiniModal1(false);
-        //   setMiniModal2(true);
-        //   },
-      // };
-        setAction("Check-In");
-        setFormModal(false);
-        setMiniModal1(true);
-      } catch (err) {
-        console.log("Failed to RSVP because tickets sold out");
-      }
-    }
+  }
 
   return (  
     <>
@@ -151,7 +148,7 @@ const handleClick = event => {
              <UncontrolledAlert className="alert-with-icon" color="transparent">
               <span data-notify="icon" className="tim-icons icon-trophy" />
               <span>
-                <b>Congrats! -</b>
+                <b>WAGMI! 🔥🎉🎊🍾 </b>
                 You have successfully registered for {title} event. 
                 Remember to check in on the event date.
               </span>
@@ -186,7 +183,10 @@ const handleClick = event => {
                     </Row>
                   </CardBody>
                   <CardFooter className="text-center">
-                  
+                  <Button className="btn-simple" color="primary"
+                    onClick={checkin}>
+                      Check In
+                    </Button>
                   </CardFooter>
                 </Card>
                 </Col>
@@ -194,16 +194,29 @@ const handleClick = event => {
             </Container>
           </Modal>
           <Modal
-            modalClassName="modal-info modal-primary modal-form"
+            modalClassName="modal-black modal-form"
             isOpen={miniModal2}
             toggle={() => setMiniModal2(false)}
           >
-             <UncontrolledAlert className="alert-with-icon" color="info">
+             <UncontrolledAlert className="alert-with-icon" color="">
               <span data-notify="icon" className="tim-icons icon-trophy" />
               <span>
-                <b>Congrats! -</b>
+                <b>WAGMI! 🤑🪙</b>
                 You have successfully checked into your event. Enjoy!.
                 You will receive your payment back
+              </span>
+            </UncontrolledAlert>
+          </Modal>
+          <Modal
+            modalClassName="modal-black modal-primary modal-form"
+            isOpen={miniModal3}
+            toggle={() => setMiniModal3(false)}
+          >
+             <UncontrolledAlert className="alert-with-icon" color="">
+              <span data-notify="icon" className="tim-icons icon-" />
+              <h3>NGMI! 😢😢</h3>
+              <span>
+               Can't get you a reservation because tickets sold out or ensure you have entered the correct information.
               </span>
             </UncontrolledAlert>
           </Modal>
