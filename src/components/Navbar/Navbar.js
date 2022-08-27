@@ -32,7 +32,7 @@ export default function TopNavbar(props) {
       document.documentElement.scrollTop > 99 ||
       document.body.scrollTop > 99
     ) {
-      setColor("bg-info");
+      setColor("bg-default");
     } else if (
       document.documentElement.scrollTop < 100 ||
       document.body.scrollTop < 100
@@ -52,13 +52,6 @@ export default function TopNavbar(props) {
   };
 
   const stdlib = loadStdlib('ALGO');
-  // stdlib.setWalletFallback(stdlib.walletFallback({
-  // providerEnv: 'TestNet', MyAlgoConnect }));
-
-
-  // const account = useRef()
-  // const balance = useRef()
-
 
     const [accountBal, setAccountBal] = useState(0);
     const [accountAddress, setAccountAddress] = useState('Connect Wallet');
@@ -78,7 +71,6 @@ export default function TopNavbar(props) {
         try{
           const acc = await account()
             setAccountAddress(acc.networkAccount.addr)
-            // console.log("Account :" + acc.networkAccount.addr)
         }catch(err){
             console.log(err)
         }
@@ -90,7 +82,6 @@ export default function TopNavbar(props) {
               let rawBalance = await stdlib.balanceOf(acc)
                 let balance = stdlib.formatCurrency(rawBalance, 4)
                 setAccountBal(balance)
-            // console.log("Balance :" + balance)
         }catch(err){
             console.log(err)
         }
@@ -131,8 +122,8 @@ export default function TopNavbar(props) {
                 href=""
                 onClick={connectWithMyAlgoWallet}
               >
-                <i className="tim-icons icon-spaceship" /> {accountAddress}
-                 {accountBal}
+                <i className="tim-icons icon-spaceship" /> {accountAddress}  {accountBal}
+                 
               </Button>
           
               </Col>
@@ -156,7 +147,7 @@ export default function TopNavbar(props) {
                 href=""
                 onClick={connectWithMyAlgoWallet}
               >
-                <i className="tim-icons icon-spaceship" /> {accountAddress}
+                <i className="tim-icons icon-spaceship" /> {accountAddress}  {accountBal}
               </Button>
             </NavItem>
           </Nav>
