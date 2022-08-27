@@ -35,6 +35,8 @@ export default function CreateEvent(props) {
     // const mainContainer = document.getElementById('rsvp');
 
     const [RSVPs, setRSVPs] = useState([]);
+    const [checkIns, setCheckIns] = useState([]);
+
     const [title, setTitle] = useState("");
     const [fees, setFees] = useState(1);
     // const [image, setImage] = useState("");
@@ -72,6 +74,15 @@ export default function CreateEvent(props) {
       }
     }
 
+    const checkins = event =>  {
+      for ( const checkin of checkIns) {
+      event.currentTarget.insertAdjacentHTML("afterend", `<p className="rsvp">${checkin} checked in.</p>`)  
+      // sleep(5000);
+      // event.currentTarget.adjacentHTML.remove() 
+      // = `<p className="rsvp">See Reservations</p>`
+      }
+    }
+
       async function copyToClipboard(button) {
         navigator.clipboard.writeText(ctcInfoStr);
         const origInnerHTML = button.innerHTML;
@@ -88,18 +99,14 @@ export default function CreateEvent(props) {
         const ctc = acc.contract(backend);
         const interact = {
           deadline: { ETH: 10, ALGO: 100, CFX: 1000 }[stdlib.connector],
-          // fee: stdlib.parseCurrency(fee),
           createEvent: details,
-  
-          ready: () => {
-            console.log('The event is ready to start accepting reservations.');
-          },
+
           seeRSVP: (who) => {
             setAddress(stdlib.formatAddress(who));
             setRSVPs(RSVPs => [...RSVPs, stdlib.formatAddress(who)]);           
           },
           confirmGuest: (who) => {
-            console.log(`${stdlib.formatAddress(who)} has checked in.`);
+            setCheckIns(checkIns => [...checkIns, stdlib.formatAddress(who)]);
           },
           // manageFunds: () => {
           //   console.log(`The funds are managed`);
@@ -299,7 +306,7 @@ export default function CreateEvent(props) {
             <h4 className="text-center card-plain" >Copy your Event Information</h4>
                 <textarea value={ctcInfoStr} className="textarea">
                 </textarea>
-                <button className="btn-wrapper mt-3 mb-3 btn-simple btn-success"
+                <button className="btn-wrapper mt-3 mr-3 mb-3 btn-simple btn-success"
                   onClick={(e) => copyToClipboard(e.currentTarget)}
                 >Copy to clipboard
                 </button>
@@ -308,12 +315,9 @@ export default function CreateEvent(props) {
                 >See Reservations
                 </button>
                 <button className="btn-wrapper mt-3 mb-3 btn-simple btn-success"
-                  // onClick={}
+                  onClick={checkins}
                 >See Checkins
                 </button>
-                {/* <p>{address} made a reservation for the event.</p>
-                <p>The funds are managed</p>
-                <p>{address} has checked in</p> */}
             </Container>
           </Modal>
     </>
