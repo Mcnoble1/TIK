@@ -5,6 +5,8 @@
 /* eslint-disable no-undef */
 'reach 0.1';
 
+
+// The event information structure (object)
 const Details = Object({
   title: Bytes(64),
   location: Bytes(64),
@@ -19,7 +21,7 @@ export const main = Reach.App(() => {
   setOptions({ untrustworthyMaps: true });
 
   const Admin = Participant('Admin', {
-    // Specify Alice's interact interface here
+    // The Admin interact interface for managing events
     createEvent: Details,
     seeRSVP: Fun([Address], Null),
     confirmGuest: Fun([Address], Null),
@@ -27,37 +29,33 @@ export const main = Reach.App(() => {
   });
 
   const Attendee = API('Attendee', {
-    // Specify Bob's interact interface here
+    // The Attendee interact interface for events
     rsvpForEvent: Fun([Bytes(64), Bytes(64), UInt, UInt, Bytes(64), Bytes(64), Bytes(64)], Null),  
     checkIn: Fun([], Null)
   });
 
+  // View for showing the event details in the Frontend
   const Info = View('Info', {
     details: Details,
   });
   
   init();
 
+  // Admin creating, publishing the event details and deploying the contract
   Admin.only(() => {
     const details = declassify(interact.createEvent);
   })
-  // The first one to publish deploys the contract
   Admin.publish(details);
   const {title, location, fee, tickets, organizer, date, description} = details;
-  // enforce( thisConsensusTime() < deadline, "too late" );
   Info.details.set(details);
   const Guests = new Map(Bool);
 
-  // Info.reserved.set((who) => isSome(Guests[who]));
-  // commit();
-
+  // Attendee RSVPing for the event using a parallel reduce for the process
   const [ numTickets] = parallelReduce([ tickets])
   .invariant(balance() >= 0)
   .while(numTickets > 0)
   .api_(Attendee.rsvpForEvent, (titl, locate, fees, tick, organize, time, descrip) => {
     check(fees == fee, "Fee can't be zero");
-    // check(! done, "event started");
-    // check(isNone(Guests[this]), "already registered");
     return [fees, (notify) => {
       Guests[this] = true;
       notify(null);
@@ -67,8 +65,6 @@ export const main = Reach.App(() => {
     }];
   })
   .api_(Attendee.checkIn, () => {
-    // check(balance() == fee, "not an attendee");
-    // check(isSome(Guests[guest]), "no reservation");
     return [ (notify) => {
       notify(null);
       const who = this; 
