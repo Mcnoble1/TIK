@@ -6,7 +6,6 @@ import { Link } from "react-router-dom";
 // import ReactDatetime from "react-datetime";
 import { UncontrolledAlert } from "reactstrap";
 import {loadStdlib} from '@reach-sh/stdlib';
-// import * as backend from './build/index.main.mjs';
 import * as backend from '../reach/build/index.main.mjs';
 import { account } from "./utils"
 // reactstrap components
@@ -32,14 +31,11 @@ const stdlib = loadStdlib('ALGO');
 export default function CreateEvent(props) {
     const { handleSubmit } = useForm();
 
-    // const mainContainer = document.getElementById('rsvp');
-
     const [RSVPs, setRSVPs] = useState([]);
     const [checkIns, setCheckIns] = useState([]);
 
     const [title, setTitle] = useState("");
     const [fees, setFees] = useState(1);
-    // const [image, setImage] = useState("");
     const [location, setLocation] = useState("");
     const [date, setDate] = useState("Sept 1, 2022");
     const [description, setDescription] = useState("");
@@ -119,10 +115,6 @@ export default function CreateEvent(props) {
   
         setMiniModal(true);
         setCtcInfoStr(ctcInfoStr);
-        // } catch (err) {
-        //   console.log(err);
-        //   setMiniModal1(true);
-        // }
       } catch (err) {
         setMiniModal1(true);
       }

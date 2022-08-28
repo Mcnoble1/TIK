@@ -181,33 +181,18 @@ await ctcAdmin.participants.Admin({
   manageFunds: () => {
     console.log(`The funds are managed`);
   },
-
-  
-  // checkIn: async (who) => {
-  //   const check = await ask.ask(
-  //     'Would you like to check in?',
-  //     ask.yesno
-  //   );
-  //   if (check) {    
-  //     const now = await getBalance();
-  //     console.log(`Your balance after RSVP is ${now} ${stdlib.standardUnit}`);
-  //    console.log(`You have checked in. You should get your money back.`);
-  //   } else {
-  //     console.log(`You have not checked in.`);
-  //   }
-  // }
 });
 
 
 
-// for (const [name, acc] of RSVPs) {
-//   console.log(`${name} with the address ${stdlib.formatAddress(acc)} made a reservation and checked in to the event.`);
-//   }
+for (const [name, acc] of RSVPs) {
+  console.log(`${name} with the address ${stdlib.formatAddress(acc)} made a reservation and checked in to the event.`);
+  }
 
-// const after = await getBalance();
-// console.log(`Your balance is now ${after}`);
+const after = await getBalance();
+console.log(`Your balance is now ${after}`);
 
-// console.log('Goodbye, Admin and Attendee!');
+console.log('Goodbye, Admin and Attendee!');
 ask.done();
 
 done = true;
